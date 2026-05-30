@@ -9,10 +9,10 @@ enum LangoConstants {
     static let slotsKey = "messageSlots"
     static let widgetKind = "LangoWidget"
 
-    // Keychain account name for the Worker shared secret.
-    static let workerSecretKeychainAccount = "lango.worker.secret"
-    // UserDefaults key for the Worker URL (lives in the App Group).
-    static let workerURLKey = "lango.worker.url"
+    // Keychain account name for the Kapso API key (the only secret on device).
+    static let kapsoAPIKeyKeychainAccount = "lango.kapso.api.key"
+    // UserDefaults key for the Kapso WhatsApp phone-number ID (lives in App Group).
+    static let kapsoPhoneNumberIDKey = "lango.kapso.phone_number_id"
 
     static let slotColors: [(red: Double, green: Double, blue: Double)] = [
         (0.0, 0.478, 1.0),     // Blue   #007AFF
@@ -22,7 +22,8 @@ enum LangoConstants {
 
     static let defaultIcons = ["house.and.flag.fill", "car.fill", "checkmark.seal.fill"]
     static let defaultLabels = ["Open Gate", "On My Way", "Arrived"]
-    static let defaultMessageKeys = ["gate_open", "eta_to_anna", "arrived_anna"]
+    /// Default Meta template names — must match approved templates in Kapso.
+    static let defaultTemplateNames = ["gate_open", "eta_arriving", "arrived"]
 
     /// Debounce interval — ignore repeat taps within this window after a send.
     static let debounceInterval: TimeInterval = 5.0

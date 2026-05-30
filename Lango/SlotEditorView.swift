@@ -24,14 +24,26 @@ struct SlotEditorView: View {
                 }
 
                 Section {
-                    TextField("messageKey", text: $slot.messageKey)
+                    TextField("gate_open", text: $slot.templateName)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled(true)
                         .font(.system(.body, design: .monospaced))
                 } header: {
-                    Text("Message Key")
+                    Text("Template Name")
                 } footer: {
-                    Text("Must match a `ROUTE_<key>` env var on the Lango Worker. The Worker resolves this key to a Meta template and recipient phone number — neither of which lives on this device.")
+                    Text("The approved Meta template name in Kapso (e.g. `gate_open`, `eta_arriving`, `arrived`). A typo here yields a Kapso error at send time.")
+                }
+
+                Section {
+                    TextField("2547XXXXXXXX", text: $slot.recipientPhone)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled(true)
+                        .keyboardType(.numberPad)
+                        .font(.system(.body, design: .monospaced))
+                } header: {
+                    Text("Recipient Phone")
+                } footer: {
+                    Text("International format, digits only — no `+`, no spaces. Example: `2547XXXXXXXX` for a Kenyan number.")
                 }
 
                 Section {

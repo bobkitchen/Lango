@@ -3,35 +3,35 @@ import SwiftUI
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
 
-    @State private var workerURL: String = ""
-    @State private var workerSecret: String = ""
+    @State private var kapsoPhoneNumberID: String = ""
+    @State private var kapsoAPIKey: String = ""
     @State private var saveError: String?
 
     var body: some View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("https://lango-worker.your-account.workers.dev",
-                              text: $workerURL)
+                    TextField("e.g. 1234567890",
+                              text: $kapsoPhoneNumberID)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled(true)
-                        .keyboardType(.URL)
+                        .keyboardType(.numberPad)
                         .font(.system(.body, design: .monospaced))
                 } header: {
-                    Text("Worker URL")
+                    Text("Kapso Phone Number ID")
                 } footer: {
-                    Text("The Cloudflare Worker that authenticates this device and forwards to Meta WhatsApp. URL is stored in App Group UserDefaults.")
+                    Text("Found in Kapso dashboard → Phone Numbers after Instant Setup. Identifies which WhatsApp sender Kapso routes through. Stored in App Group UserDefaults.")
                 }
 
                 Section {
-                    SecureField("Shared secret", text: $workerSecret)
+                    SecureField("Kapso API key", text: $kapsoAPIKey)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled(true)
                         .font(.system(.body, design: .monospaced))
                 } header: {
-                    Text("Worker Secret")
+                    Text("Kapso API Key")
                 } footer: {
-                    Text("Stored in the iOS Keychain (after-first-unlock-this-device-only) and shared with the widget extension via Keychain Access Group. Never leaves the device except as the X-Lango-Secret header on Worker calls.")
+                    Text("Stored in the iOS Keychain (after-first-unlock-this-device-only) and shared with the widget extension via Keychain Access Group. Sent as the `X-API-Key` header on every Kapso call.")
                 }
 
                 Section {
@@ -61,8 +61,8 @@ struct SettingsView: View {
                 }
             }
             .onAppear {
-                workerURL = AppConfig.workerURL
-                workerSecret = AppConfig.workerSecret
+                kapsoPhoneNumberID = AppConfig.kapsoPhoneNumberID
+                kapsoAPIKey = AppConfig.kapsoAPIKey
             }
         }
     }
@@ -87,12 +87,12 @@ struct SettingsView: View {
     }
 
     private func save() {
-        AppConfig.workerURL = workerURL
+        AppConfig.kapsoPhoneNumberID = kapsoPhoneNumberID
         do {
-            try AppConfig.setWorkerSecret(workerSecret)
+            try AppConfig.setKapsoAPIKey(kapsoAPIKey)
             dismiss()
         } catch {
-            saveError = "Failed to save secret: \(error)"
+            saveError = "Failed to save API key: \(error)"
         }
     }
 }

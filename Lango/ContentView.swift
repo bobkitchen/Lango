@@ -76,13 +76,13 @@ struct ContentView: View {
     @ViewBuilder
     private var statusBanner: some View {
         let configured = slots.filter(\.isConfigured).count
-        let workerReady = AppConfig.isConfigured
+        let kapsoReady = AppConfig.isConfigured
 
         VStack(alignment: .leading, spacing: 6) {
             HStack {
-                Image(systemName: workerReady ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
-                    .foregroundStyle(workerReady ? .green : .orange)
-                Text(workerReady ? "Worker configured" : "Worker not configured — open Settings")
+                Image(systemName: kapsoReady ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
+                    .foregroundStyle(kapsoReady ? .green : .orange)
+                Text(kapsoReady ? "Kapso configured" : "Kapso not configured — open Settings")
                     .font(.subheadline)
                 Spacer()
             }
@@ -122,7 +122,7 @@ struct ContentView: View {
         let slot = slots[index]
         guard slot.isConfigured else { return }
         guard AppConfig.isConfigured else {
-            lastSendError = "Configure the Worker URL and secret in Settings first."
+            lastSendError = "Configure the Kapso phone-number ID and API key in Settings first."
             return
         }
 
@@ -131,7 +131,10 @@ struct ContentView: View {
         loadSlots()
 
         do {
-            try await MessageService.send(messageKey: slot.messageKey)
+            try await MessageService.send(
+                templateName: slot.templateName,
+                recipientPhone: slot.recipientPhone
+            )
             store.setSlotState(index, state: .sent)
         } catch {
             store.setSlotState(index, state: .failed)
@@ -167,13 +170,23 @@ private struct SlotCardView: View {
             }
 
             if slot.isConfigured {
-                HStack(spacing: 6) {
-                    Text("messageKey:")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    Text(slot.messageKey)
-                        .font(.caption.monospaced())
-                        .foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 6) {
+                        Text("template:")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Text(slot.templateName)
+                            .font(.caption.monospaced())
+                            .foregroundStyle(.secondary)
+                    }
+                    HStack(spacing: 6) {
+                        Text("to:")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Text(slot.recipientPhone)
+                            .font(.caption.monospaced())
+                            .foregroundStyle(.secondary)
+                    }
                 }
 
                 if let lastSent = slot.lastSentAt {

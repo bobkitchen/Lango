@@ -1,7 +1,7 @@
 import Foundation
 import Security
 
-/// Thin wrapper around `kSecClassGenericPassword` for the Worker shared secret.
+/// Thin wrapper around `kSecClassGenericPassword` for the Kapso API key.
 ///
 /// Items use:
 ///   - `kSecAttrAccessible: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`
@@ -15,7 +15,7 @@ enum KeychainService {
         case unhandled(OSStatus)
     }
 
-    static func setSecret(_ secret: String, account: String = LangoConstants.workerSecretKeychainAccount) throws {
+    static func setSecret(_ secret: String, account: String = LangoConstants.kapsoAPIKeyKeychainAccount) throws {
         guard let data = secret.data(using: .utf8) else { return }
 
         // Update if exists, otherwise add.
@@ -46,7 +46,7 @@ enum KeychainService {
         }
     }
 
-    static func getSecret(account: String = LangoConstants.workerSecretKeychainAccount) -> String? {
+    static func getSecret(account: String = LangoConstants.kapsoAPIKeyKeychainAccount) -> String? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: account,
@@ -65,7 +65,7 @@ enum KeychainService {
         return str
     }
 
-    static func deleteSecret(account: String = LangoConstants.workerSecretKeychainAccount) {
+    static func deleteSecret(account: String = LangoConstants.kapsoAPIKeyKeychainAccount) {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: account,

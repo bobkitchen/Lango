@@ -8,13 +8,13 @@ import WidgetKit
 /// **Driver-safety redline**: `authenticationPolicy = .alwaysAllowed` lets this
 /// run on a locked device without prompting Face ID. Without it, every CarPlay
 /// or Siri invocation would force the driver to unlock the phone — which is
-/// the redline. The intent itself does no security-sensitive work; it just
-/// posts a `messageKey` to the Worker, which is the source of truth for who
-/// gets messaged and what gets sent.
+/// the redline. The intent reads the slot's template name + recipient phone
+/// from App Group storage and the Kapso API key from the shared Keychain,
+/// then POSTs directly to Kapso.
 struct SendMessageIntent: AppIntent {
     static let title: LocalizedStringResource = "Send Lango Message"
     static let description: IntentDescription = IntentDescription(
-        "Sends a preset WhatsApp message via the Lango Worker."
+        "Sends a preset WhatsApp message via Kapso."
     )
 
     static let openAppWhenRun: Bool = false
@@ -53,7 +53,10 @@ struct SendMessageIntent: AppIntent {
         store.setSlotState(slotIndex, state: .sending)
 
         do {
-            try await MessageService.send(messageKey: slot.messageKey)
+            try await MessageService.send(
+                templateName: slot.templateName,
+                recipientPhone: slot.recipientPhone
+            )
             store.setSlotState(slotIndex, state: .sent)
         } catch {
             store.setSlotState(slotIndex, state: .failed)
